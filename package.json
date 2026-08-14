@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "workspaces:list": "npm ls --workspaces --depth=0",
+    "workspace:check-link": "test -L node_modules/@dnb/task-flow-core && test -e node_modules/@dnb/task-flow-core && echo 'task-flow-core symlink is valid'",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
