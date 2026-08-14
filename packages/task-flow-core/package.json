@@ -1,16 +1,27 @@
 {
   "name": "@dnb/task-flow-core",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Framework-independent task flow engine and contracts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "pack:check": "npm pack --dry-run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "private": true,
   "devDependencies": {
     "@types/jest": "30.0.0",
