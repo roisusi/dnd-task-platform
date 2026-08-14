@@ -1,4 +1,4 @@
-import { CORE_HEALTH } from "./index.js";
+import { CORE_HEALTH } from "./index";
 
 describe("task-flow-core", () => {
   it("should return ok", () => {

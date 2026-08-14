@@ -2,10 +2,10 @@
   "compilerOptions": {
     // JavaScript version produced by the compiler.
     "target": "ES2022",
-    // Emit modules using Node's modern ESM rules.
-    "module": "NodeNext",
-    // Resolve imports exactly as modern Node resolves them.
-    "moduleResolution": "NodeNext",
+    // Emit modules in the format used by Nest's default Node setup.
+    "module": "CommonJS",
+    // Resolve imports using Node's standard package lookup.
+    "moduleResolution": "Node",
 
     // TypeScript source files live here.
     "rootDir": "./src",
@@ -14,7 +14,7 @@
 
     // Enable TypeScript's complete strict checking group.
     "strict": true,
-    // Compile every file independently, as required by ts-jest with NodeNext.
+    // Compile every file independently for predictable test transforms.
     "isolatedModules": true,
 
     // Generate .d.ts files for package consumers.
