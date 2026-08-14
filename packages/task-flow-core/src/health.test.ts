@@ -1,3 +1,7 @@
-it('should return ok', () => {
-    expect('return test ok').toBeTruthy()
+import { CORE_HEALTH } from "./index.js";
+
+describe("task-flow-core", () => {
+  it("should return ok", () => {
+    expect(CORE_HEALTH).toBe("ok");
+  });
 });
