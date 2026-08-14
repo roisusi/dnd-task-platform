@@ -1,26 +1,42 @@
 {
   "compilerOptions": {
+    // JavaScript version produced by the compiler.
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    // Emit modules using Node's modern ESM rules.
+    "module": "NodeNext",
+    // Resolve imports exactly as modern Node resolves them.
+    "moduleResolution": "NodeNext",
 
+    // TypeScript source files live here.
     "rootDir": "./src",
+    // Compiled JavaScript and type declarations are written here.
     "outDir": "./dist",
 
+    // Enable TypeScript's complete strict checking group.
     "strict": true,
+    // Compile every file independently, as required by ts-jest with NodeNext.
+    "isolatedModules": true,
 
+    // Generate .d.ts files for package consumers.
     "declaration": true,
+    // Let editors navigate from .d.ts files back to TypeScript source.
     "declarationMap": true,
 
+    // Map runtime JavaScript errors back to TypeScript lines.
     "sourceMap": true,
 
+    // Improve compatibility when importing CommonJS dependencies.
     "esModuleInterop": true,
+    // Prevent casing differences that break on other operating systems.
     "forceConsistentCasingInFileNames": true,
+    // Skip type-checking dependency declaration files for faster builds.
     "skipLibCheck": true
   },
+  // Compile every TypeScript source file.
   "include": [
     "src/**/*.ts"
   ],
+  // Do not compile output, dependencies, or unit tests into dist.
   "exclude": [
     "dist",
     "node_modules",
