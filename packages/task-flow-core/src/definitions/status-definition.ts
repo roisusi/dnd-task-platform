@@ -17,7 +17,6 @@ import { type ValidationRule } from "../validation";
  * const approvalStatus: StatusDefinition<ApprovalData> = {
  *   status: 1,
  *   name: "Approvals",
- *   canClose: false,
  *   validations: [{
  *     validate: (data) => data.approvals.length >= 2,
  *     issue: {
@@ -31,6 +30,5 @@ import { type ValidationRule } from "../validation";
 export interface StatusDefinition<TData> {
   status: number;
   name: string;
-  canClose: boolean;
   validations: readonly ValidationRule<TData>[];
 }

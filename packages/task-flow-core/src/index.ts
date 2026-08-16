@@ -6,9 +6,6 @@ export * from "./models";
 /** Public workflow-definition contracts. */
 export * from "./definitions";
 
-/** Public workflow-policy contracts. */
-export * from "./policies";
-
 /** Public task-data validation contracts. */
 export * from "./validation";
 
