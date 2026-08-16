@@ -47,7 +47,7 @@ export function next<TData>(input: NextInput<TData>): NextResult<TData> {
     };
   }
 
-  //set from natural 1 to index zero base so step 1 is index 0
+  // Select the next status from the ordered workflow definition.
   const destinationStatus = definition.statuses[currentStatusIndex + 1];
 
   //Prevent runtime crush if trying to make next

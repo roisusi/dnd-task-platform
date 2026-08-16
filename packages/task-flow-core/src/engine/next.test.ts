@@ -154,6 +154,49 @@ describe("next", () => {
     });
   });
 
+  it("returns all failed destination-status validation messages in definition order", () => {
+    const firstIssue = {
+      code: "FIRST_APPROVAL_REQUIRED",
+      message: "A first approval is required before continuing.",
+    };
+    const secondIssue = {
+      code: "SECOND_APPROVAL_REQUIRED",
+      message: "A second approval is required before continuing.",
+    };
+    const definitionWithTwoRules: WorkflowDefinition<TestData> = {
+      ...definition,
+      statuses: [
+        definition.statuses[0],
+        {
+          ...definition.statuses[1],
+          validations: [
+            {
+              validate: ({ approvals }) => approvals.length >= 1,
+              issue: firstIssue,
+            },
+            {
+              validate: ({ approvals }) => approvals.length >= 2,
+              issue: secondIssue,
+            },
+          ],
+        },
+        definition.statuses[2],
+      ],
+    };
+
+    const result = next(
+      createInput({
+        definition: definitionWithTwoRules,
+        data: { approvals: [] },
+      }),
+    );
+
+    expect(result).toEqual({
+      task: null,
+      messages: [firstIssue, secondIssue],
+    });
+  });
+
   it("rejects an empty next assigned-user identifier", () => {
     const result = next(
       createInput({
