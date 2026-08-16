@@ -5,6 +5,5 @@ export interface Task<TData> {
   status: number; //step in the process
   lifecycleState: LifecycleStateType;
   id: string;
-  workflowDefinitionId: string; //what
   assignedUserId: string; //use assign id
 }

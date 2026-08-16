@@ -1,2 +1,2 @@
 export { type Task } from "./task";
-export { type LifecycleStateType } from "./lifecycle-state";
+export { type LifecycleStateType, LifecycleState } from "./lifecycle-state";
