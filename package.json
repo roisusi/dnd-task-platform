@@ -11,6 +11,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "test:core:verbose": "npm test -w @dnb/task-flow-core -- --runInBand --verbose",
     "test:coverage": "npm run test:cov --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspaces --if-present"
   },
