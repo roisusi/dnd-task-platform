@@ -12,7 +12,20 @@ import { type Task } from "../models";
 export interface TaskOperationResult<TData> {
   /** The task produced by the operation, or `null` when it failed. */
   task: Task<TData> | null;
-
   /** Messages explaining the failure; empty on success. */
   messages: WorkflowMessage[];
+}
+
+/** Creates a failed task-operation result from one or more messages. */
+export function taskOperationFailure<TData>(
+  messages: WorkflowMessage[],
+): TaskOperationResult<TData> {
+  return { task: null, messages };
+}
+
+/** Creates a successful task-operation result from the produced task. */
+export function taskOperationSuccess<TData>(
+  task: Task<TData>,
+): TaskOperationResult<TData> {
+  return { task, messages: [{ code: "200", message: "success" }] };
 }

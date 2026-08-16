@@ -1,5 +1,9 @@
 import { type NextInput } from "./next-input";
-import { type TaskOperationResult } from "../task-operation-result";
+import {
+  taskOperationFailure,
+  type TaskOperationResult,
+  taskOperationSuccess,
+} from "../task-operation-result";
 import { validateStatusMove } from "../status-move-validation";
 import { validateStatusData } from "../validate-status-data";
 
@@ -42,10 +46,7 @@ export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData>
   );
 
   if (statusMove.error !== undefined) {
-    return {
-      task: null,
-      messages: [statusMove.error],
-    };
+    return taskOperationFailure([statusMove.error]);
   }
 
   const { destinationStatus } = statusMove;
@@ -54,28 +55,19 @@ export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData>
 
   //stop the next if that is a validation error
   if (validationMessages.length > 0) {
-    return {
-      task: null,
-      messages: validationMessages,
-    };
+    return taskOperationFailure(validationMessages);
   }
 
   //stop the next id no user assignment entered
   if (nextAssignedUserId.trim().length === 0) {
-    return {
-      task: null,
-      messages: [messages.nextAssigneeRequired],
-    };
+    return taskOperationFailure([messages.nextAssigneeRequired]);
   }
 
-  return {
-    task: {
-      ...task,
-      status: destinationStatus.status,
-      lifecycleState: "open", //cant be closed because "closed" is a user action
-      assignedUserId: nextAssignedUserId,
-      data,
-    },
-    messages: [],
-  };
+  return taskOperationSuccess({
+    ...task,
+    status: destinationStatus.status,
+    lifecycleState: "open", //cant be closed because "closed" is a user action
+    assignedUserId: nextAssignedUserId,
+    data,
+  });
 }
