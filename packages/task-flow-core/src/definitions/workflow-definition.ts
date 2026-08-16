@@ -21,15 +21,15 @@ import { type StatusDefinition } from "./status-definition";
  *
  * const approvalWorkflow: WorkflowDefinition<ApprovalData> = {
  *   key: "approval-v1",
- *   initialStatus: 0,
+ *   initialStatus: 1,
  *   statuses: [
  *     {
- *       status: 0,
+ *       status: 1,
  *       name: "Created",
  *       validations: [],
  *     },
  *     {
- *       status: 1,
+ *       status: 2,
  *       name: "Approval",
  *       validations: [{
  *         validate: (data) => data.isApproved,
@@ -40,7 +40,7 @@ import { type StatusDefinition } from "./status-definition";
  *       }],
  *     },
  *     {
- *       status: 2,
+ *       status: 3,
  *       name: "Completed",
  *       validations: [],
  *     },
