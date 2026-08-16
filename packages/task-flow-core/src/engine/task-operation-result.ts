@@ -27,5 +27,5 @@ export function taskOperationFailure<TData>(
 export function taskOperationSuccess<TData>(
   task: Task<TData>,
 ): TaskOperationResult<TData> {
-  return { task, messages: [{ code: "200", message: "success" }] };
+  return { task, messages: [] };
 }
