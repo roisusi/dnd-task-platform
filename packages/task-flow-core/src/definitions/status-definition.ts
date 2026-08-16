@@ -3,8 +3,8 @@ import { type ValidationRule } from "../validation";
 /**
  * Describes one status in a consumer-defined workflow.
  *
- * Each status owns the validation rules that must pass before the task can
- * leave that status and continue through the workflow.
+ * Each status owns the validation rules that must pass before a task can enter
+ * that status during a forward move. Backward moves do not run these rules.
  *
  * @typeParam TData - The consumer-owned task-data shape validated by the rules.
  *
@@ -15,7 +15,7 @@ import { type ValidationRule } from "../validation";
  * }
  *
  * const approvalStatus: StatusDefinition<ApprovalData> = {
- *   status: 1,
+ *   status: 2,
  *   name: "Approvals",
  *   validations: [{
  *     validate: (data) => data.approvals.length >= 2,
