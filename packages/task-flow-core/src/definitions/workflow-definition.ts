@@ -1,0 +1,61 @@
+import { type AssigneePolicy, type ClosurePolicy, type TransitionPolicy } from "../policies";
+import { type StatusDefinition } from "./status-definition";
+
+/**
+ * Describes a complete workflow configuration supplied by a consuming application.
+ *
+ * The generic engine uses this definition to discover the available statuses,
+ * their order, the initial status and the policies that control
+ * transition, closure and assignment decisions. The definition contains no
+ * concrete workflow logic owned by the core package.
+ *
+ * Adding another workflow requires the consumer to create another object that
+ * implements this interface; it does not require changing the generic engine.
+ *
+ * @typeParam TData - The consumer-owned data stored in each task for this workflow.
+ *
+ * @example
+ * ```ts
+ * interface ApprovalData {
+ *   isApproved: boolean;
+ * }
+ *
+ * const approvalWorkflow: WorkflowDefinition<ApprovalData> = {
+ *   key: "approval-v1",
+ *   initialStatus: 0,
+ *   statuses: [
+ *     { status: 0, name: "Created", canClose: false },
+ *     { status: 1, name: "Approval", canClose: false },
+ *     { status: 2, name: "Completed", canClose: true },
+ *   ],
+ *   transitionPolicy: (task, toStatus) =>
+ *     toStatus !== 2 || task.data.isApproved,
+ *   closurePolicy: (task) =>
+ *     task.status === 2 && task.data.isApproved,
+ *   assigneePolicy: (_task, toStatus) =>
+ *     toStatus === 1 ? "approver-user-id" : "owner-user-id",
+ * };
+ * ```
+ */
+export interface WorkflowDefinition<TData> {
+  /** A stable key that identifies this workflow definition to the consumer. */
+  key: string;
+
+  /** The numeric status assigned to a newly created task. */
+  initialStatus: number;
+
+  /**
+   * All statuses recognized by this workflow, ordered from first to last.
+   * The engine uses this order to resolve the next and previous statuses.
+   */
+  statuses: readonly StatusDefinition[];
+
+  /** Applies dynamic business rules before a requested transition is allowed. */
+  transitionPolicy: TransitionPolicy<TData>;
+
+  /** Applies dynamic business rules before a task is allowed to close. */
+  closurePolicy: ClosurePolicy<TData>;
+
+  /** Resolves the user who should own the task at the requested next status. */
+  assigneePolicy: AssigneePolicy<TData>;
+}
