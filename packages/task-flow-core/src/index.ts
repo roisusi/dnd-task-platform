@@ -11,3 +11,6 @@ export * from "./validation";
 
 /** Public framework-independent workflow message contracts. */
 export * from "./errors";
+
+/** Public framework-independent workflow engine operations. */
+export * from "./engine";
