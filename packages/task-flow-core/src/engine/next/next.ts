@@ -1,6 +1,7 @@
 import { type NextInput } from "./next-input";
 import { type TaskOperationResult } from "../task-operation-result";
 import { validateStatusMove } from "../status-move-validation";
+import { validateStatusData } from "../validate-status-data";
 
 /**
  * Advances an open task to the immediately following workflow status.
@@ -49,10 +50,7 @@ export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData>
 
   const { destinationStatus } = statusMove;
 
-  //check all the validation rules that the server have entered, can be more than 1 and return the issues
-  const validationMessages = destinationStatus.validations
-    .filter(({ validate }) => !validate(data))
-    .map(({ issue }) => issue);
+  const validationMessages = validateStatusData(destinationStatus, data);
 
   //stop the next if that is a validation error
   if (validationMessages.length > 0) {
