@@ -1,5 +1,9 @@
 import { type BackInput } from "./back-input";
-import { type TaskOperationResult } from "../task-operation-result";
+import {
+  taskOperationFailure,
+  type TaskOperationResult,
+  taskOperationSuccess,
+} from "../task-operation-result";
 import { validateStatusMove } from "../status-move-validation";
 
 /**
@@ -28,28 +32,19 @@ export function back<TData>(input: BackInput<TData>): TaskOperationResult<TData>
   );
 
   if (statusMove.error !== undefined) {
-    return {
-      task: null,
-      messages: [statusMove.error],
-    };
+    return taskOperationFailure([statusMove.error]);
   }
 
   const { destinationStatus } = statusMove;
 
   if (previousAssignedUserId.trim().length === 0) {
-    return {
-      task: null,
-      messages: [messages.previousAssigneeRequired],
-    };
+    return taskOperationFailure([messages.previousAssigneeRequired]);
   }
 
-  return {
-    task: {
-      ...task,
-      status: destinationStatus.status,
-      lifecycleState: "open",
-      assignedUserId: previousAssignedUserId,
-    },
-    messages: [],
-  };
+  return taskOperationSuccess({
+    ...task,
+    status: destinationStatus.status,
+    lifecycleState: "open",
+    assignedUserId: previousAssignedUserId,
+  });
 }

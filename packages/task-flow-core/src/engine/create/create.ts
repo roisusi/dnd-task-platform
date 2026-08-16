@@ -1,4 +1,8 @@
-import { type TaskOperationResult } from "../task-operation-result";
+import {
+  taskOperationFailure,
+  type TaskOperationResult,
+  taskOperationSuccess,
+} from "../task-operation-result";
 import { validateStatusData } from "../validate-status-data";
 import { type CreateInput } from "./create-input";
 
@@ -19,15 +23,15 @@ export function create<TData>(
   const { taskId, definition, data, initialAssignedUserId, messages } = input;
 
   if (taskId.trim().length === 0) {
-    return { task: null, messages: [messages.taskIdRequired] };
+    return taskOperationFailure([messages.taskIdRequired]);
   }
 
   if (definition.key.trim().length === 0) {
-    return { task: null, messages: [messages.workflowKeyRequired] };
+    return taskOperationFailure([messages.workflowKeyRequired]);
   }
 
   if (initialAssignedUserId.trim().length === 0) {
-    return { task: null, messages: [messages.initialAssigneeRequired] };
+    return taskOperationFailure([messages.initialAssigneeRequired]);
   }
 
   const initialStatus = definition.statuses.find(
@@ -35,24 +39,21 @@ export function create<TData>(
   );
 
   if (initialStatus === undefined) {
-    return { task: null, messages: [messages.initialStatusNotFound] };
+    return taskOperationFailure([messages.initialStatusNotFound]);
   }
 
   const validationMessages = validateStatusData(initialStatus, data);
 
   if (validationMessages.length > 0) {
-    return { task: null, messages: validationMessages };
+    return taskOperationFailure(validationMessages);
   }
 
-  return {
-    task: {
-      id: taskId,
-      workflowKey: definition.key,
-      status: initialStatus.status,
-      lifecycleState: "open",
-      assignedUserId: initialAssignedUserId,
-      data,
-    },
-    messages: [],
-  };
+  return taskOperationSuccess({
+    id: taskId,
+    workflowKey: definition.key,
+    status: initialStatus.status,
+    lifecycleState: "open",
+    assignedUserId: initialAssignedUserId,
+    data,
+  });
 }

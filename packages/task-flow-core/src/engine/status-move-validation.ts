@@ -4,6 +4,7 @@ import {
 } from "../definitions";
 import { type WorkflowMessage } from "../errors";
 import { type Task } from "../models";
+import { validateTaskStatus } from "./task-status-validation";
 
 type StatusMoveDirection = -1 | 1;
 
@@ -29,17 +30,13 @@ export function validateStatusMove<TData>(
   direction: StatusMoveDirection,
   messages: StatusMoveMessages,
 ): StatusMoveValidation<TData> {
-  if (task.lifecycleState === "closed") {
-    return { error: messages.taskClosed };
+  const taskStatus = validateTaskStatus(task, definition, messages);
+
+  if (taskStatus.error !== undefined) {
+    return { error: taskStatus.error };
   }
 
-  const currentStatusIndex = definition.statuses.findIndex(
-    ({ status }) => status === task.status,
-  );
-
-  if (currentStatusIndex === -1) {
-    return { error: messages.currentStatusNotFound };
-  }
+  const { currentStatusIndex } = taskStatus;
 
   const destinationStatus = definition.statuses[currentStatusIndex + direction];
 
