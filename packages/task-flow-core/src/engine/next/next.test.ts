@@ -59,6 +59,7 @@ const definition: WorkflowDefinition<TestData> = {
 function createTask(overrides: Partial<Task<TestData>> = {}): Task<TestData> {
   return {
     id: "task-17",
+    workflowKey: "test-workflow",
     status: 1,
     lifecycleState: "open",
     assignedUserId: "user-1",
@@ -91,6 +92,7 @@ describe("next", () => {
     expect(result.messages).toEqual([]); //next result return []
     expect(result.task).toEqual({
       id: "task-17",
+      workflowKey: "test-workflow",
       status: 2,
       lifecycleState: "open",
       assignedUserId: "user-8",
