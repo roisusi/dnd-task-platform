@@ -1,6 +1,6 @@
-import { type WorkflowDefinition } from "../definitions";
-import { type WorkflowMessage } from "../errors";
-import { type Task } from "../models";
+import { type WorkflowDefinition } from "../../definitions";
+import { type WorkflowMessage } from "../../errors";
+import { type Task } from "../../models";
 
 /**
  * Contains consumer-defined messages for the generic failures detected by Next.

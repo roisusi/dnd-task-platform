@@ -1,5 +1,5 @@
-import { type WorkflowDefinition } from "../definitions";
-import { type Task } from "../models";
+import { type WorkflowDefinition } from "../../definitions";
+import { type Task } from "../../models";
 import { type NextInput, type NextMessages } from "./next-input";
 import { next } from "./next";
 

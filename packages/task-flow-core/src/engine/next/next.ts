@@ -1,5 +1,5 @@
 import { type NextInput } from "./next-input";
-import { type NextResult } from "./next-result";
+import { type TaskOperationResult } from "../task-operation-result";
 
 /**
  * Advances an open task to the immediately following workflow status.
@@ -25,7 +25,7 @@ import { type NextResult } from "./next-result";
  *
  * @returns The advanced task on success, or workflow messages on failure.
  */
-export function next<TData>(input: NextInput<TData>): NextResult<TData> {
+export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData> {
   const { task, definition, data, nextAssignedUserId, messages } = input;
 
   if (task.lifecycleState === "closed") {
