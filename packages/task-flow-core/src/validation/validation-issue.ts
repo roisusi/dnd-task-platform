@@ -1,5 +1,7 @@
+import { type WorkflowMessage } from "../errors";
+
 /**
- * Describes one validation problem found in consumer-owned task data.
+ * Represents a workflow message reported by task-data validation.
  *
  * @example
  * ```ts
@@ -9,10 +11,4 @@
  * };
  * ```
  */
-export interface ValidationIssue {
-  /** A stable code that consumers can handle without parsing the message. */
-  code: string;
-
-  /** A human-readable explanation of the validation problem. */
-  message: string;
-}
+export type ValidationIssue = WorkflowMessage;

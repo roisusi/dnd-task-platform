@@ -1,36 +1,19 @@
 import { type ValidationIssue } from "./validation-issue";
 
-/** Describes a successful validation with no reported problems. */
-export interface ValidationSuccess {
-  isValid: true;
-  issues: readonly [];
-}
-
-/** Describes a failed validation containing <strong>at least one</strong> problem. */
-export interface ValidationFailure {
-  isValid: false;
-  issues: readonly [ValidationIssue, ...ValidationIssue[]];
-}
-
 /**
- * Represents either a successful validation or a failed validation with issues.
+ * Contains the problems reported by task-data validation.
  *
- * The `isValid` property lets TypeScript identify which result was returned.
+ * An empty array means the data is valid. One or more issues mean validation
+ * failed and the workflow operation must not continue.
  *
  * @example
  * ```ts
- * const success: ValidationResult = {
- *   isValid: true,
- *   issues: [],
- * };
+ * const success: ValidationResult = [];
  *
- * const failure: ValidationResult = {
- *   isValid: false,
- *   issues: [{
+ * const failure: ValidationResult = [{
  *     code: "APPROVAL_REQUIRED",
  *     message: "The task must be approved before continuing.",
- *   }],
- * };
+ * }];
  * ```
  */
-export type ValidationResult = ValidationSuccess | ValidationFailure;
+export type ValidationResult = readonly ValidationIssue[];
