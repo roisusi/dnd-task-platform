@@ -24,9 +24,30 @@ import { type StatusDefinition } from "./status-definition";
  *   key: "approval-v1",
  *   initialStatus: 0,
  *   statuses: [
- *     { status: 0, name: "Created", canClose: false },
- *     { status: 1, name: "Approval", canClose: false },
- *     { status: 2, name: "Completed", canClose: true },
+ *     {
+ *       status: 0,
+ *       name: "Created",
+ *       canClose: false,
+ *       validations: [],
+ *     },
+ *     {
+ *       status: 1,
+ *       name: "Approval",
+ *       canClose: false,
+ *       validations: [{
+ *         validate: (data) => data.isApproved,
+ *         issue: {
+ *           code: "APPROVAL_REQUIRED",
+ *           message: "Approval is required before continuing.",
+ *         },
+ *       }],
+ *     },
+ *     {
+ *       status: 2,
+ *       name: "Completed",
+ *       canClose: true,
+ *       validations: [],
+ *     },
  *   ],
  *   transitionPolicy: (task, toStatus) =>
  *     toStatus !== 2 || task.data.isApproved,
@@ -48,7 +69,7 @@ export interface WorkflowDefinition<TData> {
    * All statuses recognized by this workflow, ordered from first to last.
    * The engine uses this order to resolve the next and previous statuses.
    */
-  statuses: readonly StatusDefinition[];
+  statuses: readonly StatusDefinition<TData>[];
 
   /** Applies dynamic business rules before a requested transition is allowed. */
   transitionPolicy: TransitionPolicy<TData>;
