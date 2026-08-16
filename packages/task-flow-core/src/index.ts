@@ -11,3 +11,6 @@ export * from "./policies";
 
 /** Public task-data validation contracts. */
 export * from "./validation";
+
+/** Public framework-independent workflow message contracts. */
+export * from "./errors";
