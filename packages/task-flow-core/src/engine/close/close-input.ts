@@ -5,7 +5,7 @@ import { type Task } from "../../models";
 /** Contains consumer-defined messages for generic Close failures. */
 export interface CloseMessages {
   /** Returned when the task is already closed and therefore immutable. */
-  taskAlreadyClosed: WorkflowMessage;
+  taskClosed: WorkflowMessage;
 
   /** Returned when the task's current status is absent from the definition. */
   currentStatusNotFound: WorkflowMessage;

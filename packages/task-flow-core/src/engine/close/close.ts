@@ -22,10 +22,7 @@ export function close<TData>(
 ): TaskOperationResult<TData> {
   const { task, definition, messages } = input;
 
-  const taskStatus = validateTaskStatus(task, definition, {
-    taskClosed: messages.taskAlreadyClosed,
-    currentStatusNotFound: messages.currentStatusNotFound,
-  });
+  const taskStatus = validateTaskStatus(task, definition, messages);
 
   if (taskStatus.error !== undefined) {
     return taskOperationFailure([taskStatus.error]);

@@ -8,7 +8,7 @@ interface TestData {
 }
 
 const messages: CloseMessages = {
-  taskAlreadyClosed: {
+  taskClosed: {
     code: "TASK_ALREADY_CLOSED",
     message: "The task is already closed.",
   },
@@ -79,7 +79,7 @@ describe("close", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.taskAlreadyClosed],
+      messages: [messages.taskClosed],
     });
   });
 
