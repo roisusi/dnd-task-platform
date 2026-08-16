@@ -1,5 +1,6 @@
 import { type NextInput } from "./next-input";
-import { type NextResult } from "./next-result";
+import { type TaskOperationResult } from "../task-operation-result";
+import { validateStatusMove } from "../status-move-validation";
 
 /**
  * Advances an open task to the immediately following workflow status.
@@ -25,38 +26,28 @@ import { type NextResult } from "./next-result";
  *
  * @returns The advanced task on success, or workflow messages on failure.
  */
-export function next<TData>(input: NextInput<TData>): NextResult<TData> {
+export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData> {
   const { task, definition, data, nextAssignedUserId, messages } = input;
 
-  if (task.lifecycleState === "closed") {
-    return {
-      task: null,
-      messages: [messages.taskClosed],
-    };
-  }
-
-  //ensure that the current step from the DB is defined in the code
-  const currentStatusIndex = definition.statuses.findIndex(
-    ({ status }) => status === task.status,
+  const statusMove = validateStatusMove(
+    task,
+    definition,
+    1,
+    {
+      taskClosed: messages.taskClosed,
+      currentStatusNotFound: messages.currentStatusNotFound,
+      workflowEdgeReached: messages.finalStatusReached,
+    },
   );
 
-  if (currentStatusIndex === -1) {
+  if (statusMove.error !== undefined) {
     return {
       task: null,
-      messages: [messages.currentStatusNotFound],
+      messages: [statusMove.error],
     };
   }
 
-  // Select the next status from the ordered workflow definition.
-  const destinationStatus = definition.statuses[currentStatusIndex + 1];
-
-  //Prevent runtime crush if trying to make next
-  if (destinationStatus === undefined) {
-    return {
-      task: null,
-      messages: [messages.finalStatusReached],
-    };
-  }
+  const { destinationStatus } = statusMove;
 
   //check all the validation rules that the server have entered, can be more than 1 and return the issues
   const validationMessages = destinationStatus.validations
