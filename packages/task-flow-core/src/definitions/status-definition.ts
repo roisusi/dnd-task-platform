@@ -28,7 +28,7 @@ import { type ValidationRule } from "../validation";
  * };
  * ```
  */
-export interface StatusDefinition<TData = unknown> {
+export interface StatusDefinition<TData> {
   status: number;
   name: string;
   canClose: boolean;
