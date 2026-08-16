@@ -1,5 +1,6 @@
 import { type BackInput } from "./back-input";
 import { type TaskOperationResult } from "../task-operation-result";
+import { validateStatusMove } from "../status-move-validation";
 
 /**
  * Moves an open task to the immediately previous workflow status.
@@ -15,32 +16,25 @@ import { type TaskOperationResult } from "../task-operation-result";
 export function back<TData>(input: BackInput<TData>): TaskOperationResult<TData> {
   const { task, definition, previousAssignedUserId, messages } = input;
 
-  if (task.lifecycleState === "closed") {
-    return {
-      task: null,
-      messages: [messages.taskClosed],
-    };
-  }
-
-  const currentStatusIndex = definition.statuses.findIndex(
-    ({ status }) => status === task.status,
+  const statusMove = validateStatusMove(
+    task,
+    definition,
+    -1,
+    {
+      taskClosed: messages.taskClosed,
+      currentStatusNotFound: messages.currentStatusNotFound,
+      workflowEdgeReached: messages.initialStatusReached,
+    },
   );
 
-  if (currentStatusIndex === -1) {
+  if (statusMove.error !== undefined) {
     return {
       task: null,
-      messages: [messages.currentStatusNotFound],
+      messages: [statusMove.error],
     };
   }
 
-  const destinationStatus = definition.statuses[currentStatusIndex - 1];
-
-  if (destinationStatus === undefined) {
-    return {
-      task: null,
-      messages: [messages.initialStatusReached],
-    };
-  }
+  const { destinationStatus } = statusMove;
 
   if (previousAssignedUserId.trim().length === 0) {
     return {
