@@ -13,7 +13,7 @@ Run these commands from the repository root.
 ### Create an empty migration
 
 ```bash
-npm run migration:create -w apps/api -- src/database/migrations/MigrationName
+npm run migration:create -w apps/api -- src/database/migrations/GiveTableMigrationName
 ```
 
 Creates an empty migration file. You must write both methods manually:
@@ -26,7 +26,7 @@ After the file is created, it is considered a pending migration until `migration
 ### Generate a migration from the entities
 
 ```bash
-npm run migration:generate -w apps/api -- src/database/migrations/MigrationName
+npm run migration:generate -w apps/api -- src/database/migrations/GiveTableMigrationName
 ```
 
 Compares the TypeORM entities with the current database schema and generates the required SQL in a new migration file. It does not change the database.

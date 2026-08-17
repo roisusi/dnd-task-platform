@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TasksController } from './tasks/tasks.controller';
+import { TasksModule } from './tasks/tasks.module';
 
 const environment = process.env.NODE_ENV ?? 'development';
 
@@ -27,6 +29,7 @@ const environment = process.env.NODE_ENV ?? 'development';
         synchronize: false,
       }),
     }),
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
