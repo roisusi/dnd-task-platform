@@ -28,6 +28,7 @@ export default new DataSource({
   database: getRequiredEnvironmentVariable('DB_NAME'),
   username: getRequiredEnvironmentVariable('DB_USERNAME'),
   password: getRequiredEnvironmentVariable('DB_PASSWORD'),
+  // One database connection; register every migration-visible entity here.
   entities: [TaskEntity],
   migrations: [join(__dirname, 'migrations', '*{.ts,.js}')],
   synchronize: false,
