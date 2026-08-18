@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   ParseUUIDPipe,
   Post,
@@ -23,6 +24,20 @@ export class TasksController {
     return this.tasksService.findAll();
   }
 
+  /** Returns the tasks assigned to one existing demo user. */
+  @Get('assigned/:userId')
+  findAssignedToUser(
+    @Param('userId') userId: string,
+  ): Promise<TaskEntity[]> {
+    return this.tasksService.findAssignedToUser(userId);
+  }
+
+  /** Returns one task so its routed UI page can survive a browser refresh. */
+  @Get(':id')
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<TaskEntity> {
+    return this.tasksService.findOne(id);
+  }
+
   /** Creates a task from the validated request body. */
   @Post()
   create(@Body() createTaskDto: CreateTaskDto): Promise<TaskEntity> {
@@ -33,8 +48,9 @@ export class TasksController {
   next(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() nextTaskDto: NextTaskDto,
+    @Headers('x-user-id') currentUserId?: string,
   ): Promise<TaskEntity> {
-    return this.tasksService.next(id, nextTaskDto);
+    return this.tasksService.next(id, nextTaskDto, currentUserId);
   }
 
   /** Moves an open task one workflow status backward. */
@@ -42,13 +58,17 @@ export class TasksController {
   back(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() backTaskDto: BackTaskDto,
+    @Headers('x-user-id') currentUserId?: string,
   ): Promise<TaskEntity> {
-    return this.tasksService.back(id, backTaskDto);
+    return this.tasksService.back(id, backTaskDto, currentUserId);
   }
 
   /** Closes an open task when it is currently at the final workflow status. */
   @Post(':id/close')
-  close(@Param('id', ParseUUIDPipe) id: string): Promise<TaskEntity> {
-    return this.tasksService.close(id);
+  close(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Headers('x-user-id') currentUserId?: string,
+  ): Promise<TaskEntity> {
+    return this.tasksService.close(id, currentUserId);
   }
 }

@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { DataSource } from 'typeorm';
 import { TaskEntity } from '../tasks/tasks.entity';
+import { UserEntity } from '../users/user.entity';
 
 const environment = process.env.NODE_ENV ?? 'development';
 
@@ -29,7 +30,7 @@ export default new DataSource({
   username: getRequiredEnvironmentVariable('DB_USERNAME'),
   password: getRequiredEnvironmentVariable('DB_PASSWORD'),
   // One database connection; register every migration-visible entity here.
-  entities: [TaskEntity],
+  entities: [TaskEntity, UserEntity],
   migrations: [join(__dirname, 'migrations', '*{.ts,.js}')],
   synchronize: false,
 });

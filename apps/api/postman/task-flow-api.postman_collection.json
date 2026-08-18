@@ -1,81 +1,364 @@
 {
   "info": {
-    "_postman_id": "9554868c-470e-4f08-a551-321d09459d61",
+    "_postman_id": "7810a9d7-8c9e-413e-8d16-de54dd1b0003",
     "name": "D&B Task Flow API",
-    "description": "Learning collection for creating tasks and reading all tasks from the NestJS API.",
+    "description": "Requests for the three workflow types and the seeded demo users required by the assignment.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "const currentUserId = pm.collectionVariables.get('currentUserId');",
+          "",
+          "if (currentUserId) {",
+          "  pm.request.headers.upsert({",
+          "    key: 'x-user-id',",
+          "    value: currentUserId,",
+          "  });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "if (pm.response.code >= 200 && pm.response.code < 300) {",
+          "  const response = pm.response.json();",
+          "",
+          "  if (response && !Array.isArray(response) && response.assignedUserId) {",
+          "    pm.collectionVariables.set('currentUserId', response.assignedUserId);",
+          "  }",
+          "",
+          "  if (response && !Array.isArray(response) && response.id) {",
+          "    pm.collectionVariables.set('currentTaskId', response.id);",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
   "item": [
     {
-      "name": "Tasks",
+      "name": "Shared task operations",
       "item": [
-        {
-          "name": "Create task",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"workflowKey\": \"procurement\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {\n    \"title\": \"Buy new laptops\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/tasks",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tasks"
-              ]
-            },
-            "description": "Creates a new workflow task. This request will work after POST /tasks is implemented."
-          },
-          "response": []
-        },
         {
           "name": "Get all tasks",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
+            "header": [],
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "Get tasks assigned to current user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tasks/assigned/{{currentUserId}}",
+            "description": "Demo users are inserted by a database migration, not by an API request."
+          }
+        },
+        {
+          "name": "Get current task by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tasks/{{currentTaskId}}",
+            "description": "Loads one task directly. The React route /tasks/:taskId uses this endpoint so browser refresh keeps the user on the same task."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation examples",
+      "item": [
+        {
+          "name": "Reject unsupported workflow",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Unsupported workflow is rejected', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
               }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/tasks",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tasks"
-              ]
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workflowKey\": \"unknown-flow\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {}\n}"
             },
-            "description": "Returns every task stored in the tasks table."
-          },
-          "response": []
+            "url": "{{baseUrl}}/tasks",
+            "description": "A client can send any string, but the API registry rejects a workflow that has no registered definition. No task is saved."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1 - Procurement",
+      "item": [
+        {
+          "name": "1. Create Procurement task",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('procurementTaskId', pm.response.json().id);",
+              "}"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workflowKey\": \"procurement\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {\n    \"title\": \"Buy new laptops\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "2. Next - supplier offers received",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nextAssignedUserId\": \"user-2\",\n  \"data\": {\n    \"priceQuotes\": [\n      \"Supplier A: 5000\",\n      \"Supplier B: 4800\"\n    ]\n  }\n}"
+            },
+            "url": "{{baseUrl}}/tasks/{{procurementTaskId}}/next"
+          }
+        },
+        {
+          "name": "3. Next - purchase completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-2" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nextAssignedUserId\": \"user-3\",\n  \"data\": {\n    \"receipt\": \"receipt-400\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/tasks/{{procurementTaskId}}/next"
+          }
+        },
+        {
+          "name": "Back one status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-3" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"previousAssignedUserId\": \"user-2\"\n}" },
+            "url": "{{baseUrl}}/tasks/{{procurementTaskId}}/back"
+          }
+        },
+        {
+          "name": "Close Procurement task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-user-id", "value": "user-3" }],
+            "url": "{{baseUrl}}/tasks/{{procurementTaskId}}/close",
+            "description": "Close has no request body and succeeds only at the final status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Development",
+      "item": [
+        {
+          "name": "1. Create Development task",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('developmentTaskId', pm.response.json().id);",
+              "}"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workflowKey\": \"development\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {\n    \"title\": \"Build customer dashboard\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "2. Next - specification completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-1" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-2\",\n  \"data\": {\n    \"specification\": \"Dashboard specification text\"\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{developmentTaskId}}/next"
+          }
+        },
+        {
+          "name": "3. Next - development completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-2" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-3\",\n  \"data\": {\n    \"branchName\": \"feature/customer-dashboard\"\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{developmentTaskId}}/next"
+          }
+        },
+        {
+          "name": "4. Next - distribution completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-3" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-4\",\n  \"data\": {\n    \"versionNumber\": \"1.0.0\"\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{developmentTaskId}}/next"
+          }
+        },
+        {
+          "name": "Back one status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-4" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"previousAssignedUserId\": \"user-3\"\n}" },
+            "url": "{{baseUrl}}/tasks/{{developmentTaskId}}/back"
+          }
+        },
+        {
+          "name": "Close Development task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-user-id", "value": "user-4" }],
+            "url": "{{baseUrl}}/tasks/{{developmentTaskId}}/close"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Product Order",
+      "item": [
+        {
+          "name": "1. Create Product Order task",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('productOrderTaskId', pm.response.json().id);",
+              "}"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workflowKey\": \"product-order\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {\n    \"productName\": \"Office chairs\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "2. Next - supplier bids received",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-1" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-2\",\n  \"data\": {\n    \"bids\": [\n      { \"supplierName\": \"Supplier A\", \"price\": 5000 },\n      { \"supplierName\": \"Supplier B\", \"price\": 4700 }\n    ]\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/next"
+          }
+        },
+        {
+          "name": "3. Next - supplier selected",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-2" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-3\",\n  \"data\": {\n    \"selectedSupplierName\": \"Supplier B\"\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/next"
+          }
+        },
+        {
+          "name": "4. Next - supervisor approved",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-3" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-4\",\n  \"data\": {\n    \"supervisorApproved\": true\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/next"
+          }
+        },
+        {
+          "name": "5. Next - order placed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-4" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"nextAssignedUserId\": \"user-2\",\n  \"data\": {\n    \"orderReference\": \"ORDER-2026-001\"\n  }\n}" },
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/next"
+          }
+        },
+        {
+          "name": "Back one status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "user-2" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"previousAssignedUserId\": \"user-4\"\n}" },
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/back"
+          }
+        },
+        {
+          "name": "Close Product Order task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-user-id", "value": "user-2" }],
+            "url": "{{baseUrl}}/tasks/{{productOrderTaskId}}/close"
+          }
         }
       ]
     }
   ],
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3000",
-      "type": "string"
-    }
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "currentUserId", "value": "user-1" },
+    { "key": "currentTaskId", "value": "" },
+    { "key": "procurementTaskId", "value": "" },
+    { "key": "developmentTaskId", "value": "" },
+    { "key": "productOrderTaskId", "value": "" }
   ]
 }
