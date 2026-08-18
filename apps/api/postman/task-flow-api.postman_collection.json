@@ -31,6 +31,10 @@
           "  if (response && !Array.isArray(response) && response.assignedUserId) {",
           "    pm.collectionVariables.set('currentUserId', response.assignedUserId);",
           "  }",
+          "",
+          "  if (response && !Array.isArray(response) && response.id) {",
+          "    pm.collectionVariables.set('currentTaskId', response.id);",
+          "  }",
           "}"
         ]
       }
@@ -55,6 +59,45 @@
             "header": [],
             "url": "{{baseUrl}}/tasks/assigned/{{currentUserId}}",
             "description": "Demo users are inserted by a database migration, not by an API request."
+          }
+        },
+        {
+          "name": "Get current task by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tasks/{{currentTaskId}}",
+            "description": "Loads one task directly. The React route /tasks/:taskId uses this endpoint so browser refresh keeps the user on the same task."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation examples",
+      "item": [
+        {
+          "name": "Reject unsupported workflow",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Unsupported workflow is rejected', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workflowKey\": \"unknown-flow\",\n  \"assignedUserId\": \"user-1\",\n  \"data\": {}\n}"
+            },
+            "url": "{{baseUrl}}/tasks",
+            "description": "A client can send any string, but the API registry rejects a workflow that has no registered definition. No task is saved."
           }
         }
       ]
@@ -313,6 +356,7 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000" },
     { "key": "currentUserId", "value": "user-1" },
+    { "key": "currentTaskId", "value": "" },
     { "key": "procurementTaskId", "value": "" },
     { "key": "developmentTaskId", "value": "" },
     { "key": "productOrderTaskId", "value": "" }
