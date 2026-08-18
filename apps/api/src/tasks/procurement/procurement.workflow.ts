@@ -1,7 +1,7 @@
 import { type WorkflowDefinition } from '@dnb/task-flow-core';
 
 /** Data collected while a procurement task moves through its workflow. */
-export interface ProcurementTaskData {
+export interface ProcurementTaskData extends Record<string, unknown> {
   priceQuotes?: readonly string[];
   receipt?: string;
 }
