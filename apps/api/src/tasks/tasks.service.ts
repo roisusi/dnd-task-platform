@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -42,8 +43,17 @@ export class TasksService {
     return this.tasksRepository.find();
   }
 
+  /** Returns every task currently assigned to an existing demo user. */
+  async findAssignedToUser(userId: string): Promise<TaskEntity[]> {
+    await this.requireUser(userId);
+
+    return this.tasksRepository.findBy({ assignedUserId: userId });
+  }
+
   /** Creates and persists a Procurement task at its initial status. */
   async create(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+    await this.requireUser(createTaskDto.assignedUserId);
+
     if (createTaskDto.workflowKey !== procurementWorkflow.key) {
       throw new BadRequestException(
         'Only the procurement workflow is supported.',
@@ -66,7 +76,11 @@ export class TasksService {
   }
 
   /** Advances an existing Procurement task by one workflow status. */
-  async next(id: string, nextTaskDto: NextTaskDto): Promise<TaskEntity> {
+  async next(
+    id: string,
+    nextTaskDto: NextTaskDto,
+    currentUserId?: string,
+  ): Promise<TaskEntity> {
     // 1. Load the existing task from the repository by id.
     const existingTask = await this.tasksRepository.findOneBy({ id });
 
@@ -74,6 +88,10 @@ export class TasksService {
     if (existingTask === null) {
       throw new NotFoundException(`Task ${id} was not found.`);
     }
+
+    await this.requireAssignedUser(existingTask, currentUserId);
+    await this.requireUser(nextTaskDto.nextAssignedUserId);
+
     // 3. Call the task-flow-core next operation with the existing task,
     //    Procurement definition, DTO data and next assignee.
     const result = nextTask<ProcurementTaskData>({
@@ -90,12 +108,19 @@ export class TasksService {
     return this.tasksRepository.save(result.task);
   }
 
-  async back(id: string, backTaskDto: BackTaskDto): Promise<TaskEntity> {
+  async back(
+    id: string,
+    backTaskDto: BackTaskDto,
+    currentUserId?: string,
+  ): Promise<TaskEntity> {
     const existingTask = await this.tasksRepository.findOneBy({ id });
 
     if (existingTask === null) {
       throw new NotFoundException(`Task ${id} was not found.`);
     }
+
+    await this.requireAssignedUser(existingTask, currentUserId);
+    await this.requireUser(backTaskDto.previousAssignedUserId);
 
     const result = backTask({
       task: existingTask,
@@ -109,12 +134,14 @@ export class TasksService {
     return this.tasksRepository.save(result.task);
   }
 
-  async close(id: string): Promise<TaskEntity> {
+  async close(id: string, currentUserId?: string): Promise<TaskEntity> {
     const existingTask = await this.tasksRepository.findOneBy({ id });
 
     if (existingTask === null) {
       throw new NotFoundException(`Task ${id} was not found.`);
     }
+
+    await this.requireAssignedUser(existingTask, currentUserId);
 
     const result = closeTask({
       definition: procurementWorkflow,
@@ -136,5 +163,23 @@ export class TasksService {
     }
 
     return user;
+  }
+
+  /** Ensures that a known current user owns the task before it can change. */
+  private async requireAssignedUser(
+    task: TaskEntity,
+    currentUserId?: string,
+  ): Promise<void> {
+    if (currentUserId === undefined || currentUserId.trim().length === 0) {
+      throw new BadRequestException('The x-user-id header is required.');
+    }
+
+    await this.requireUser(currentUserId);
+
+    if (task.assignedUserId !== currentUserId) {
+      throw new ForbiddenException(
+        'Only the assigned user can modify this task.',
+      );
+    }
   }
 }
