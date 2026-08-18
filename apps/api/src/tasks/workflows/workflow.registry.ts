@@ -1,4 +1,3 @@
-import { type WorkflowDefinition } from '@dnb/task-flow-core';
 import { developmentWorkflow } from './development.workflow';
 import { procurementWorkflow } from './procurement.workflow';
 import { productOrderWorkflow } from './product-order.workflow';
@@ -19,12 +18,12 @@ export type WorkflowKey = keyof typeof workflowRegistry;
 
 /**
  * Finds the executable definition registered for a persisted workflow key.
- * `any` is limited to this dynamic lookup boundary; every individual workflow
- * retains its own strongly typed task-data interface and validation functions.
+ * The return type is the exact union of the definitions in the registry, so
+ * every individual workflow retains its strongly typed validation functions.
  */
 export function findWorkflowDefinition(
   workflowKey: string,
-): WorkflowDefinition<any> | undefined {
+): (typeof workflowRegistry)[WorkflowKey] | undefined {
   if (!Object.hasOwn(workflowRegistry, workflowKey)) {
     return undefined;
   }
