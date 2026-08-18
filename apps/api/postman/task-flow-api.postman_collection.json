@@ -5,6 +5,37 @@
     "description": "Requests for the three workflow types and the seeded demo users required by the assignment.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "const currentUserId = pm.collectionVariables.get('currentUserId');",
+          "",
+          "if (currentUserId) {",
+          "  pm.request.headers.upsert({",
+          "    key: 'x-user-id',",
+          "    value: currentUserId,",
+          "  });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "if (pm.response.code >= 200 && pm.response.code < 300) {",
+          "  const response = pm.response.json();",
+          "",
+          "  if (response && !Array.isArray(response) && response.assignedUserId) {",
+          "    pm.collectionVariables.set('currentUserId', response.assignedUserId);",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
   "item": [
     {
       "name": "Shared task operations",
