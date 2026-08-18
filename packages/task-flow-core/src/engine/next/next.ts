@@ -32,19 +32,16 @@ import { validateStatusData } from "../validate-status-data";
  *
  * @returns The advanced task on success, or workflow messages on failure.
  */
-export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData> {
+export function next<TData>(
+  input: NextInput<TData>,
+): TaskOperationResult<TData> {
   const { task, definition, data, nextAssignedUserId } = input;
 
-  const statusMove = validateStatusMove(
-    task,
-    definition,
-    1,
-    {
-      taskClosed: CoreMessages.taskClosed,
-      currentStatusNotFound: CoreMessages.currentStatusNotFound,
-      workflowEdgeReached: CoreMessages.finalStatusReached,
-    },
-  );
+  const statusMove = validateStatusMove(task, definition, 1, {
+    taskClosed: CoreMessages.taskClosed,
+    currentStatusNotFound: CoreMessages.currentStatusNotFound,
+    workflowEdgeReached: CoreMessages.finalStatusReached,
+  });
 
   if (statusMove.error !== undefined) {
     return taskOperationFailure([statusMove.error]);
@@ -52,7 +49,12 @@ export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData>
 
   const { destinationStatus } = statusMove;
 
-  const validationMessages = validateStatusData(destinationStatus, data);
+  const updatedData = {
+    ...task.data,
+    ...data,
+  };
+
+  const validationMessages = validateStatusData(destinationStatus, updatedData);
 
   //stop the next if that is a validation error
   if (validationMessages.length > 0) {
@@ -69,6 +71,6 @@ export function next<TData>(input: NextInput<TData>): TaskOperationResult<TData>
     status: destinationStatus.status,
     lifecycleState: "open", //cant be closed because "closed" is a user action
     assignedUserId: nextAssignedUserId,
-    data,
+    data: updatedData,
   });
 }

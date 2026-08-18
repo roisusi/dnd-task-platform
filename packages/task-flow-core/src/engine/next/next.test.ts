@@ -6,6 +6,7 @@ import { next } from "./next";
 
 interface TestData {
   approvals: string[];
+  requestTitle?: string;
 }
 
 const definition: WorkflowDefinition<TestData> = {
@@ -80,6 +81,27 @@ describe("next", () => {
       data: {
         approvals: ["user-2", "user-3"],
       },
+    });
+  });
+
+  it("preserves existing task data while adding destination-status data", () => {
+    const result = next(
+      createInput({
+        task: createTask({
+          data: {
+            approvals: [],
+            requestTitle: "Buy new laptops",
+          },
+        }),
+        data: {
+          approvals: ["user-2", "user-3"],
+        },
+      }),
+    );
+
+    expect(result.task?.data).toEqual({
+      approvals: ["user-2", "user-3"],
+      requestTitle: "Buy new laptops",
     });
   });
 
