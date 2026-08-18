@@ -20,6 +20,7 @@ import {
 } from './procurement/procurement.workflow';
 import { TaskEntity } from './tasks.entity';
 import { BackTaskDto } from './dtos/back-task.dto';
+import { UserEntity } from '../users/user.entity';
 
 /**
  * Handles task persistence and coordinates task-flow business operations.
@@ -32,6 +33,8 @@ export class TasksService {
   constructor(
     @InjectRepository(TaskEntity)
     private readonly tasksRepository: Repository<TaskEntity>,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
   /** Returns every task currently stored in the tasks table. */
@@ -122,5 +125,16 @@ export class TasksService {
       throw new BadRequestException(result.messages);
     }
     return this.tasksRepository.save(result.task);
+  }
+
+  /** Returns an existing demo user or rejects an unknown user identifier. */
+  private async requireUser(userId: string): Promise<UserEntity> {
+    const user = await this.usersRepository.findOneBy({ id: userId });
+
+    if (user === null) {
+      throw new NotFoundException(`User ${userId} was not found.`);
+    }
+
+    return user;
   }
 }
