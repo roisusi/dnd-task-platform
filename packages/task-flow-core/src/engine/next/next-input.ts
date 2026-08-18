@@ -1,23 +1,5 @@
 import { type WorkflowDefinition } from "../../definitions";
-import { type WorkflowMessage } from "../../errors";
 import { type Task } from "../../models";
-
-/**
- * Contains consumer-defined messages for the generic failures detected by Next.
- */
-export interface NextMessages {
-  /** Returned when a closed task cannot be changed. */
-  taskClosed: WorkflowMessage;
-
-  /** Returned when the task's current status is absent from the definition. */
-  currentStatusNotFound: WorkflowMessage;
-
-  /** Returned when the task is already at the final status. */
-  finalStatusReached: WorkflowMessage;
-
-  /** Returned when the next assigned-user identifier is empty. */
-  nextAssigneeRequired: WorkflowMessage;
-}
 
 /**
  * Contains the information required to advance a task by one workflow status.
@@ -37,7 +19,6 @@ export interface NextMessages {
  *     isApproved: true,
  *   },
  *   nextAssignedUserId: "user-8",
- *   messages: nextMessages,
  * };
  * ```
  */
@@ -54,6 +35,4 @@ export interface NextInput<TData> {
   /** The identifier of the user who will own the task after the move. */
   nextAssignedUserId: string;
 
-  /** Consumer-defined messages for generic Next failures. */
-  messages: NextMessages;
 }

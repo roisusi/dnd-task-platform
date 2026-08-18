@@ -1,2 +1,2 @@
-export { type CreateInput, type CreateMessages } from "./create-input";
+export { type CreateInput } from "./create-input";
 export { create } from "./create";

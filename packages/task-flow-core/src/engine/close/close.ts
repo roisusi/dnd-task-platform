@@ -3,6 +3,7 @@ import {
   type TaskOperationResult,
   taskOperationSuccess,
 } from "../task-operation-result";
+import { CoreMessages } from "../../errors";
 import { validateTaskStatus } from "../task-status-validation";
 import { type CloseInput } from "./close-input";
 
@@ -14,15 +15,18 @@ import { type CloseInput } from "./close-input";
  * lifecycle state.
  *
  * @typeParam TData - The consumer-owned task-data shape.
- * @param input - Current task, workflow definition and failure messages.
+ * @param input - Current task and workflow definition.
  * @returns The closed task on success, or a workflow message on failure.
  */
 export function close<TData>(
   input: CloseInput<TData>,
 ): TaskOperationResult<TData> {
-  const { task, definition, messages } = input;
+  const { task, definition } = input;
 
-  const taskStatus = validateTaskStatus(task, definition, messages);
+  const taskStatus = validateTaskStatus(task, definition, {
+    taskClosed: CoreMessages.taskClosed,
+    currentStatusNotFound: CoreMessages.currentStatusNotFound,
+  });
 
   if (taskStatus.error !== undefined) {
     return taskOperationFailure([taskStatus.error]);
@@ -33,7 +37,7 @@ export function close<TData>(
   const finalStatusIndex = definition.statuses.length - 1;
 
   if (currentStatusIndex !== finalStatusIndex) {
-    return taskOperationFailure([messages.finalStatusRequired]);
+    return taskOperationFailure([CoreMessages.finalStatusRequired]);
   }
 
   return taskOperationSuccess({
