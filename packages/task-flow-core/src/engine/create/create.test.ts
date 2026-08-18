@@ -1,29 +1,11 @@
 import { type WorkflowDefinition } from "../../definitions";
+import { CoreMessages } from "../../errors";
 import { create } from "./create";
-import { type CreateInput, type CreateMessages } from "./create-input";
+import { type CreateInput } from "./create-input";
 
 interface TestData {
   approvals: string[];
 }
-
-const messages: CreateMessages = {
-  taskIdRequired: {
-    code: "TASK_ID_REQUIRED",
-    message: "A task identifier is required.",
-  },
-  workflowKeyRequired: {
-    code: "WORKFLOW_KEY_REQUIRED",
-    message: "A workflow key is required.",
-  },
-  initialStatusNotFound: {
-    code: "INITIAL_STATUS_NOT_FOUND",
-    message: "The configured initial status was not found.",
-  },
-  initialAssigneeRequired: {
-    code: "INITIAL_ASSIGNEE_REQUIRED",
-    message: "An initial assigned user is required.",
-  },
-};
 
 const definition: WorkflowDefinition<TestData> = {
   key: "test-workflow",
@@ -54,7 +36,6 @@ function createInput(
     definition,
     data: { approvals: ["user-2"] },
     initialAssignedUserId: "user-1",
-    messages,
     ...overrides,
   };
 }
@@ -102,7 +83,7 @@ describe("create", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.taskIdRequired],
+      messages: [CoreMessages.taskIdRequired],
     });
   });
 
@@ -113,7 +94,7 @@ describe("create", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.workflowKeyRequired],
+      messages: [CoreMessages.workflowKeyRequired],
     });
   });
 
@@ -122,7 +103,7 @@ describe("create", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.initialAssigneeRequired],
+      messages: [CoreMessages.initialAssigneeRequired],
     });
   });
 
@@ -133,7 +114,7 @@ describe("create", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.initialStatusNotFound],
+      messages: [CoreMessages.initialStatusNotFound],
     });
   });
 

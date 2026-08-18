@@ -1,30 +1,12 @@
 import { type WorkflowDefinition } from "../../definitions";
+import { CoreMessages } from "../../errors";
 import { type Task } from "../../models";
-import { type NextInput, type NextMessages } from "./next-input";
+import { type NextInput } from "./next-input";
 import { next } from "./next";
 
 interface TestData {
   approvals: string[];
 }
-
-const messages: NextMessages = {
-  taskClosed: {
-    code: "TASK_CLOSED",
-    message: "A closed task cannot be changed.",
-  },
-  currentStatusNotFound: {
-    code: "STATUS_NOT_FOUND",
-    message: "The current status is unknown.",
-  },
-  finalStatusReached: {
-    code: "FINAL_STATUS_REACHED",
-    message: "The task is already at its final status.",
-  },
-  nextAssigneeRequired: {
-    code: "NEXT_ASSIGNEE_REQUIRED",
-    message: "A next assigned user is required.",
-  },
-};
 
 const definition: WorkflowDefinition<TestData> = {
   key: "test-workflow",
@@ -80,7 +62,6 @@ function createInput(
       approvals: ["user-2", "user-3"],
     },
     nextAssignedUserId: "user-8",
-    messages,
     ...overrides,
   };
 }
@@ -111,7 +92,7 @@ describe("next", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.taskClosed],
+      messages: [CoreMessages.taskClosed],
     });
   });
 
@@ -124,7 +105,7 @@ describe("next", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.currentStatusNotFound],
+      messages: [CoreMessages.currentStatusNotFound],
     });
   });
 
@@ -137,7 +118,7 @@ describe("next", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.finalStatusReached],
+      messages: [CoreMessages.finalStatusReached],
     });
   });
 
@@ -208,7 +189,7 @@ describe("next", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.nextAssigneeRequired],
+      messages: [CoreMessages.nextAssigneeRequired],
     });
   });
 

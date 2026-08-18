@@ -1,7 +1,12 @@
-import { type CreateMessages, type NextMessages } from '@dnb/task-flow-core';
+import { type WorkflowMessage } from './workflow-message';
 
-/** Messages returned when the generic Create operation cannot create a task. */
-export const createMessages = {
+/**
+ * Default messages for failures produced by the generic workflow engine.
+ *
+ * Task-specific validation messages remain in the consuming workflow
+ * definition beside the business rule that can produce them.
+ */
+export const CoreMessages = {
   taskIdRequired: {
     code: 'TASK_ID_REQUIRED',
     message: 'A task identifier is required.',
@@ -18,10 +23,6 @@ export const createMessages = {
     code: 'INITIAL_ASSIGNEE_REQUIRED',
     message: 'An initial assigned user is required.',
   },
-} satisfies CreateMessages;
-
-/** Messages returned when the generic Next operation cannot advance a task. */
-export const nextMessages = {
   taskClosed: {
     code: 'TASK_CLOSED',
     message: 'A closed task cannot be changed.',
@@ -38,4 +39,16 @@ export const nextMessages = {
     code: 'NEXT_ASSIGNEE_REQUIRED',
     message: 'A next assigned user is required.',
   },
-} satisfies NextMessages;
+  initialStatusReached: {
+    code: 'INITIAL_STATUS_REACHED',
+    message: 'The task is already at the initial status.',
+  },
+  previousAssigneeRequired: {
+    code: 'PREVIOUS_ASSIGNEE_REQUIRED',
+    message: 'A previous assigned user is required.',
+  },
+  finalStatusRequired: {
+    code: 'FINAL_STATUS_REQUIRED',
+    message: 'The task can be closed only at its final status.',
+  },
+} as const satisfies Record<string, WorkflowMessage>;

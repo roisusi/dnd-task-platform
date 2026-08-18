@@ -7,6 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { BackTaskDto } from './dtos/back-task.dto';
 import { TaskEntity } from './tasks.entity';
 import { TasksService } from './tasks.service';
 import { NextTaskDto } from './dtos/next-task.dto';
@@ -34,5 +35,20 @@ export class TasksController {
     @Body() nextTaskDto: NextTaskDto,
   ): Promise<TaskEntity> {
     return this.tasksService.next(id, nextTaskDto);
+  }
+
+  /** Moves an open task one workflow status backward. */
+  @Post(':id/back')
+  back(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() backTaskDto: BackTaskDto,
+  ): Promise<TaskEntity> {
+    return this.tasksService.back(id, backTaskDto);
+  }
+
+  /** Closes an open task when it is currently at the final workflow status. */
+  @Post(':id/close')
+  close(@Param('id', ParseUUIDPipe) id: string): Promise<TaskEntity> {
+    return this.tasksService.close(id);
   }
 }

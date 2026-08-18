@@ -3,6 +3,7 @@ import {
   type TaskOperationResult,
   taskOperationSuccess,
 } from "../task-operation-result";
+import { CoreMessages } from "../../errors";
 import { validateStatusData } from "../validate-status-data";
 import { type CreateInput } from "./create-input";
 
@@ -14,24 +15,24 @@ import { type CreateInput } from "./create-input";
  * data and copies the definition key into the new task as its workflow key.
  *
  * @typeParam TData - The consumer-owned task-data shape.
- * @param input - Identifier, definition, initial data, assignee and messages.
+ * @param input - Identifier, definition, initial data and assignee.
  * @returns The new task on success, or workflow messages on failure.
  */
 export function create<TData>(
   input: CreateInput<TData>,
 ): TaskOperationResult<TData> {
-  const { taskId, definition, data, initialAssignedUserId, messages } = input;
+  const { taskId, definition, data, initialAssignedUserId } = input;
 
   if (taskId.trim().length === 0) {
-    return taskOperationFailure([messages.taskIdRequired]);
+    return taskOperationFailure([CoreMessages.taskIdRequired]);
   }
 
   if (definition.key.trim().length === 0) {
-    return taskOperationFailure([messages.workflowKeyRequired]);
+    return taskOperationFailure([CoreMessages.workflowKeyRequired]);
   }
 
   if (initialAssignedUserId.trim().length === 0) {
-    return taskOperationFailure([messages.initialAssigneeRequired]);
+    return taskOperationFailure([CoreMessages.initialAssigneeRequired]);
   }
 
   const initialStatus = definition.statuses.find(
@@ -39,7 +40,7 @@ export function create<TData>(
   );
 
   if (initialStatus === undefined) {
-    return taskOperationFailure([messages.initialStatusNotFound]);
+    return taskOperationFailure([CoreMessages.initialStatusNotFound]);
   }
 
   const validationMessages = validateStatusData(initialStatus, data);

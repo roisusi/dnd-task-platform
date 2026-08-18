@@ -1,4 +1,5 @@
 import { type BackInput } from "./back-input";
+import { CoreMessages } from "../../errors";
 import {
   taskOperationFailure,
   type TaskOperationResult,
@@ -14,20 +15,20 @@ import { validateStatusMove } from "../status-move-validation";
  * the current status and requires an assignee for the returned task.
  *
  * @typeParam TData - The consumer-owned task-data shape.
- * @param input - Current task, ordered definition, previous assignee and messages.
+ * @param input - Current task, ordered definition and previous assignee.
  * @returns A new task on success, or workflow messages on failure.
  */
 export function back<TData>(input: BackInput<TData>): TaskOperationResult<TData> {
-  const { task, definition, previousAssignedUserId, messages } = input;
+  const { task, definition, previousAssignedUserId } = input;
 
   const statusMove = validateStatusMove(
     task,
     definition,
     -1,
     {
-      taskClosed: messages.taskClosed,
-      currentStatusNotFound: messages.currentStatusNotFound,
-      workflowEdgeReached: messages.initialStatusReached,
+      taskClosed: CoreMessages.taskClosed,
+      currentStatusNotFound: CoreMessages.currentStatusNotFound,
+      workflowEdgeReached: CoreMessages.initialStatusReached,
     },
   );
 
@@ -38,7 +39,7 @@ export function back<TData>(input: BackInput<TData>): TaskOperationResult<TData>
   const { destinationStatus } = statusMove;
 
   if (previousAssignedUserId.trim().length === 0) {
-    return taskOperationFailure([messages.previousAssigneeRequired]);
+    return taskOperationFailure([CoreMessages.previousAssigneeRequired]);
   }
 
   return taskOperationSuccess({

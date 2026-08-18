@@ -1,2 +1,2 @@
-export { type BackInput, type BackMessages } from "./back-input";
+export { type BackInput } from "./back-input";
 export { back } from "./back";

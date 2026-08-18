@@ -1,21 +1,5 @@
 import { type WorkflowDefinition } from "../../definitions";
-import { type WorkflowMessage } from "../../errors";
 import { type Task } from "../../models";
-
-/** Contains consumer-defined messages for generic Back failures. */
-export interface BackMessages {
-  /** Returned when a closed task cannot be changed. */
-  taskClosed: WorkflowMessage;
-
-  /** Returned when the task's current status is absent from the definition. */
-  currentStatusNotFound: WorkflowMessage;
-
-  /** Returned when the task is already at the first workflow status. */
-  initialStatusReached: WorkflowMessage;
-
-  /** Returned when the assigned-user identifier for the previous status is empty. */
-  previousAssigneeRequired: WorkflowMessage;
-}
 
 /**
  * Contains the information required to move a task one workflow status back.
@@ -35,6 +19,4 @@ export interface BackInput<TData> {
   /** The user who will own the task after it moves backward. */
   previousAssignedUserId: string;
 
-  /** Consumer-defined messages for generic Back failures. */
-  messages: BackMessages;
 }

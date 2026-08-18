@@ -1,26 +1,12 @@
 import { type WorkflowDefinition } from "../../definitions";
+import { CoreMessages } from "../../errors";
 import { type Task } from "../../models";
 import { close } from "./close";
-import { type CloseInput, type CloseMessages } from "./close-input";
+import { type CloseInput } from "./close-input";
 
 interface TestData {
   approvals: string[];
 }
-
-const messages: CloseMessages = {
-  taskClosed: {
-    code: "TASK_ALREADY_CLOSED",
-    message: "The task is already closed.",
-  },
-  currentStatusNotFound: {
-    code: "STATUS_NOT_FOUND",
-    message: "The current status is unknown.",
-  },
-  finalStatusRequired: {
-    code: "FINAL_STATUS_REQUIRED",
-    message: "The task must reach its final status before it can close.",
-  },
-};
 
 const definition: WorkflowDefinition<TestData> = {
   key: "test-workflow",
@@ -50,7 +36,6 @@ function createInput(
   return {
     task: createTask(),
     definition,
-    messages,
     ...overrides,
   };
 }
@@ -79,7 +64,7 @@ describe("close", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.taskClosed],
+      messages: [CoreMessages.taskClosed],
     });
   });
 
@@ -88,7 +73,7 @@ describe("close", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.currentStatusNotFound],
+      messages: [CoreMessages.currentStatusNotFound],
     });
   });
 
@@ -97,7 +82,7 @@ describe("close", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.finalStatusRequired],
+      messages: [CoreMessages.finalStatusRequired],
     });
   });
 

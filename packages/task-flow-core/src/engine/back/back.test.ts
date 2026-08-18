@@ -1,30 +1,12 @@
 import { type WorkflowDefinition } from "../../definitions";
+import { CoreMessages } from "../../errors";
 import { type Task } from "../../models";
 import { back } from "./back";
-import { type BackInput, type BackMessages } from "./back-input";
+import { type BackInput } from "./back-input";
 
 interface TestData {
   approvals: string[];
 }
-
-const messages: BackMessages = {
-  taskClosed: {
-    code: "TASK_CLOSED",
-    message: "A closed task cannot be changed.",
-  },
-  currentStatusNotFound: {
-    code: "STATUS_NOT_FOUND",
-    message: "The current status is unknown.",
-  },
-  initialStatusReached: {
-    code: "INITIAL_STATUS_REACHED",
-    message: "The task is already at its first status.",
-  },
-  previousAssigneeRequired: {
-    code: "PREVIOUS_ASSIGNEE_REQUIRED",
-    message: "A previous assigned user is required.",
-  },
-};
 
 const definition: WorkflowDefinition<TestData> = {
   key: "test-workflow",
@@ -55,7 +37,6 @@ function createInput(
     task: createTask(),
     definition,
     previousAssignedUserId: "user-1",
-    messages,
     ...overrides,
   };
 }
@@ -82,7 +63,7 @@ describe("back", () => {
       createInput({ task: createTask({ lifecycleState: "closed" }) }),
     );
 
-    expect(result).toEqual({ task: null, messages: [messages.taskClosed] });
+    expect(result).toEqual({ task: null, messages: [CoreMessages.taskClosed] });
   });
 
   it("rejects a current status that is absent from the definition", () => {
@@ -90,7 +71,7 @@ describe("back", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.currentStatusNotFound],
+      messages: [CoreMessages.currentStatusNotFound],
     });
   });
 
@@ -99,7 +80,7 @@ describe("back", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.initialStatusReached],
+      messages: [CoreMessages.initialStatusReached],
     });
   });
 
@@ -108,7 +89,7 @@ describe("back", () => {
 
     expect(result).toEqual({
       task: null,
-      messages: [messages.previousAssigneeRequired],
+      messages: [CoreMessages.previousAssigneeRequired],
     });
   });
 

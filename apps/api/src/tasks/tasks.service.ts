@@ -5,7 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { create as createTask, next as nextTask } from '@dnb/task-flow-core';
+import {
+  create as createTask,
+  next as nextTask,
+  back as backTask,
+  close as closeTask,
+} from '@dnb/task-flow-core';
 import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { NextTaskDto } from './dtos/next-task.dto';
@@ -13,8 +18,8 @@ import {
   procurementWorkflow,
   type ProcurementTaskData,
 } from './procurement/procurement.workflow';
-import { createMessages, nextMessages } from './task-flow.messages';
 import { TaskEntity } from './tasks.entity';
+import { BackTaskDto } from './dtos/back-task.dto';
 
 /**
  * Handles task persistence and coordinates task-flow business operations.
@@ -47,7 +52,6 @@ export class TasksService {
       definition: procurementWorkflow,
       data: createTaskDto.data,
       initialAssignedUserId: createTaskDto.assignedUserId,
-      messages: createMessages,
     });
 
     if (result.task === null) {
@@ -68,12 +72,11 @@ export class TasksService {
       throw new NotFoundException(`Task ${id} was not found.`);
     }
     // 3. Call the task-flow-core next operation with the existing task,
-    //    Procurement definition, DTO data, next assignee and Next messages.
+    //    Procurement definition, DTO data and next assignee.
     const result = nextTask<ProcurementTaskData>({
       data: nextTaskDto.data,
       nextAssignedUserId: nextTaskDto.nextAssignedUserId,
       task: existingTask,
-      messages: nextMessages,
       definition: procurementWorkflow,
     });
     // 4. Throw BadRequestException when the core operation returns no task.
@@ -81,6 +84,43 @@ export class TasksService {
       throw new BadRequestException(result.messages);
     }
     // 5. Persist and return the task produced by the core operation.
+    return this.tasksRepository.save(result.task);
+  }
+
+  async back(id: string, backTaskDto: BackTaskDto): Promise<TaskEntity> {
+    const existingTask = await this.tasksRepository.findOneBy({ id });
+
+    if (existingTask === null) {
+      throw new NotFoundException(`Task ${id} was not found.`);
+    }
+
+    const result = backTask({
+      task: existingTask,
+      definition: procurementWorkflow,
+      previousAssignedUserId: backTaskDto.previousAssignedUserId,
+    });
+
+    if (result.task === null) {
+      throw new BadRequestException(result.messages);
+    }
+    return this.tasksRepository.save(result.task);
+  }
+
+  async close(id: string): Promise<TaskEntity> {
+    const existingTask = await this.tasksRepository.findOneBy({ id });
+
+    if (existingTask === null) {
+      throw new NotFoundException(`Task ${id} was not found.`);
+    }
+
+    const result = closeTask({
+      definition: procurementWorkflow,
+      task: existingTask,
+    });
+
+    if (result.task === null) {
+      throw new BadRequestException(result.messages);
+    }
     return this.tasksRepository.save(result.task);
   }
 }
