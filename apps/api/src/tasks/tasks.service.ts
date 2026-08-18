@@ -40,6 +40,17 @@ export class TasksService {
     return this.tasksRepository.find();
   }
 
+  /** Returns one persisted task or rejects an unknown identifier. */
+  async findOne(id: string): Promise<TaskEntity> {
+    const task = await this.tasksRepository.findOneBy({ id });
+
+    if (task === null) {
+      throw new NotFoundException(`Task ${id} was not found.`);
+    }
+
+    return task;
+  }
+
   /** Returns every task currently assigned to an existing demo user. */
   async findAssignedToUser(userId: string): Promise<TaskEntity[]> {
     await this.requireUser(userId);
@@ -76,13 +87,7 @@ export class TasksService {
     nextTaskDto: NextTaskDto,
     currentUserId?: string,
   ): Promise<TaskEntity> {
-    // 1. Load the existing task from the repository by id.
-    const existingTask = await this.tasksRepository.findOneBy({ id });
-
-    // 2. Throw NotFoundException when the task does not exist.
-    if (existingTask === null) {
-      throw new NotFoundException(`Task ${id} was not found.`);
-    }
+    const existingTask = await this.findOne(id);
 
     await this.requireAssignedUser(existingTask, currentUserId);
     await this.requireUser(nextTaskDto.nextAssignedUserId);
@@ -109,11 +114,7 @@ export class TasksService {
     backTaskDto: BackTaskDto,
     currentUserId?: string,
   ): Promise<TaskEntity> {
-    const existingTask = await this.tasksRepository.findOneBy({ id });
-
-    if (existingTask === null) {
-      throw new NotFoundException(`Task ${id} was not found.`);
-    }
+    const existingTask = await this.findOne(id);
 
     await this.requireAssignedUser(existingTask, currentUserId);
     await this.requireUser(backTaskDto.previousAssignedUserId);
@@ -132,11 +133,7 @@ export class TasksService {
   }
 
   async close(id: string, currentUserId?: string): Promise<TaskEntity> {
-    const existingTask = await this.tasksRepository.findOneBy({ id });
-
-    if (existingTask === null) {
-      throw new NotFoundException(`Task ${id} was not found.`);
-    }
+    const existingTask = await this.findOne(id);
 
     await this.requireAssignedUser(existingTask, currentUserId);
     const definition = this.requireWorkflowDefinition(existingTask.workflowKey);

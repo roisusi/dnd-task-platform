@@ -32,6 +32,12 @@ export class TasksController {
     return this.tasksService.findAssignedToUser(userId);
   }
 
+  /** Returns one task so its routed UI page can survive a browser refresh. */
+  @Get(':id')
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<TaskEntity> {
+    return this.tasksService.findOne(id);
+  }
+
   /** Creates a task from the validated request body. */
   @Post()
   create(@Body() createTaskDto: CreateTaskDto): Promise<TaskEntity> {
