@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
 })
 
 /** Application providers and global UI foundation. */
-function App() {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>

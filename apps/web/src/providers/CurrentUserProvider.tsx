@@ -17,7 +17,7 @@ interface CurrentUserContextValue {
 const CurrentUserContext = createContext<CurrentUserContextValue | null>(null)
 
 /** Keeps the selected demo user stable across routes and browser refreshes. */
-export function CurrentUserProvider({ children }: { children: ReactNode }) {
+export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const [currentUserId, setCurrentUserId] = useState(
     () => window.localStorage.getItem(STORAGE_KEY) ?? 'user-1',
   )
@@ -38,7 +38,7 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useCurrentUser(): CurrentUserContextValue {
+export const useCurrentUser = (): CurrentUserContextValue => {
   const context = useContext(CurrentUserContext)
 
   if (context === null) {
