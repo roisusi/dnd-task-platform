@@ -3,9 +3,16 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { tasksApi } from '@api/tasks/tasks.queries'
 import { ErrorDialog } from '@components/ErrorDialog'
 import { useCurrentUser } from '@providers/CurrentUserProvider'
-import { TaskList } from '../TaskList'
+import { TaskList } from '../ui/TaskList'
 
-/** Loads and displays the tasks assigned to the current user. */
+/**
+ * Provides the complete routed feature for viewing a user's assigned tasks.
+ *
+ * It loads tasks through TanStack Query, handles loading and API failures,
+ * redirects an empty user to task creation and composes the reusable TaskList.
+ *
+ * @returns The assigned-task feature or a redirect to task creation.
+ */
 export const TaskListPage = () => {
   const navigate = useNavigate()
   const { currentUserId } = useCurrentUser()

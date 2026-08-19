@@ -5,10 +5,17 @@ import { tasksApi } from '@api/tasks/tasks.queries'
 import type { Task } from '@model/task.model'
 import { ErrorDialog } from '@components/ErrorDialog'
 import { useCurrentUser } from '@providers/CurrentUserProvider'
-import { TaskSummaryCard } from '../TaskSummaryCard'
-import { WorkflowCard } from '../WorkflowCard'
+import { TaskSummaryCard } from '../ui/TaskSummaryCard'
+import { WorkflowCard } from '../ui/WorkflowCard'
 
-/** Loads one routed task and coordinates its task-flow screen. */
+/**
+ * Provides the complete routed feature for continuing or viewing one task.
+ *
+ * It reads the task identifier from the URL, reloads the persisted task,
+ * handles loading and errors, and composes reusable summary and workflow UI.
+ *
+ * @returns The active task feature for the task selected by the route.
+ */
 export const TaskPage = () => {
   const navigate = useNavigate()
   const { taskId = '' } = useParams()

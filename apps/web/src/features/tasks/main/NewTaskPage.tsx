@@ -3,9 +3,16 @@ import { Box, Button, Stack } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { tasksApi } from '@api/tasks/tasks.queries'
 import { useCurrentUser } from '@providers/CurrentUserProvider'
-import { CreateTaskCard } from '../CreateTaskCard'
+import { CreateTaskCard } from '../ui/CreateTaskCard'
 
-/** Route page for selecting a workflow and creating its initial task. */
+/**
+ * Provides the complete routed feature for creating a task.
+ *
+ * It loads the current user context, determines whether a back-navigation
+ * action is needed and composes the reusable CreateTaskCard UI.
+ *
+ * @returns The complete new-task feature rendered by the router.
+ */
 export const NewTaskPage = () => {
   const navigate = useNavigate()
   const { currentUserId } = useCurrentUser()
