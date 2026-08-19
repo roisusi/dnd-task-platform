@@ -10,6 +10,9 @@ export default defineConfig({
       '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
       '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+      '@infrastructure': fileURLToPath(
+        new URL('./src/infrastructure', import.meta.url),
+      ),
       '@model': fileURLToPath(new URL('./src/model', import.meta.url)),
       '@providers': fileURLToPath(new URL('./src/providers', import.meta.url)),
       '@routes': fileURLToPath(new URL('./src/routes', import.meta.url)),

@@ -38,6 +38,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   )
 }
 
+/** Returns the demo-user selection shared by every task page. */
 export const useCurrentUser = (): CurrentUserContextValue => {
   const context = useContext(CurrentUserContext)
 
