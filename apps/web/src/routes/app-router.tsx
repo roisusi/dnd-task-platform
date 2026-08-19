@@ -1,9 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom'
+import { NewTaskPage } from '@features/tasks/pages/NewTaskPage'
+import { TaskListPage } from '@features/tasks/pages/TaskListPage'
+import { TaskPage } from '@features/tasks/pages/TaskPage'
+import { NotFoundPage } from '@features/navigation/error/NotFoundPage'
 import { AppRoute } from './AppRoute'
-import { NewTaskPage } from './pages/NewTaskPage'
-import { NotFoundPage } from './pages/NotFoundPage'
-import { TaskListPage } from './pages/TaskListPage'
-import { TaskPage } from './pages/TaskPage'
 
 export const appRouter = createBrowserRouter([
   {
