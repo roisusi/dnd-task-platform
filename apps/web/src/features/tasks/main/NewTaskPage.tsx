@@ -1,5 +1,7 @@
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
-import { Box, Button, Stack } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { useNavigate } from 'react-router-dom'
 import { tasksApi } from '@api/tasks/tasks.queries'
 import { useCurrentUser } from '@providers/CurrentUserProvider'

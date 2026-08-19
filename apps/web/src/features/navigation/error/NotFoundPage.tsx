@@ -1,4 +1,8 @@
-import { Button, Card, CardContent, Stack, Typography } from '@mui/material'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
 
 /** Friendly fallback for an unknown frontend route. */
