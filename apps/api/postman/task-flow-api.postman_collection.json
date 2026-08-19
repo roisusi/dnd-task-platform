@@ -42,6 +42,20 @@
   ],
   "item": [
     {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get all users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users",
+            "description": "Returns the users stored in PostgreSQL for current-user and task-assignee selection."
+          }
+        }
+      ]
+    },
+    {
       "name": "Shared task operations",
       "item": [
         {

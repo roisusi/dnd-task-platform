@@ -2,9 +2,45 @@
 
 NestJS API for the task-flow platform. It connects the reusable task-flow core library to PostgreSQL through TypeORM.
 
-## Installation
+## Developer notes
 
-<!-- Installation instructions will be added here. -->
+Use the root [`README.md`](../../README.md) for the complete installation and
+run guide. This file documents API-specific development details.
+
+### Environment loading
+
+The API and the TypeORM CLI load:
+
+```text
+.env.<NODE_ENV>.local
+```
+
+When `NODE_ENV` is not supplied, both use
+`.env.development.local`. Start by copying `.env.example`; local environment
+files are ignored by Git.
+
+### Runtime and migration connections
+
+- `AppModule` configures the TypeORM connection used while NestJS is running.
+- `src/database/data-source.ts` configures the standalone connection used by
+  TypeORM migration commands.
+- Both configurations must point to the same environment and register the
+  same entities.
+- `synchronize` remains `false`; database structure is changed only through
+  migrations.
+
+### API identity model
+
+Create accepts an initial `assignedUserId`. Next, Back and Close expect the
+current demo identity in the `x-user-id` header. The service confirms that the
+user exists and currently owns the task before changing it. This is assignment
+validation for the home assignment, not production authentication.
+
+### Postman
+
+Import `postman/task-flow-api.postman_collection.json`. Its collection-level
+scripts maintain the current task and current demo user variables while the
+requests move through Procurement, Development and Product Order.
 
 ## Database migrations
 
