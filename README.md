@@ -235,15 +235,18 @@ system and `CssBaseline`.
 
 ## Adding another workflow
 
-1. Add a consumer-owned workflow definition under the API workflow folder.
-2. Register its key in the API workflow registry.
-3. Add its UI field definition to the web workflow configuration.
-4. Add user-facing translations for any new validation message codes.
-
-The core engine, generic controller operations and task table do not need to
-be rewritten.
+Follow the concrete server, Web, persistence and verification steps in
+[`CREATE_NEW_TASK_STAGES.md`](CREATE_NEW_TASK_STAGES.md).
 
 ## Known limitations and future improvements
+
+### Automated test coverage
+
+The generic workflow engine is covered by Jest unit tests for Create, Next,
+Back and Close. Workflow-specific API integration tests and React UI tests are
+not currently implemented. The supplied Postman collection supports manual API
+verification, but it is not a replacement for automated integration or
+end-to-end tests.
 
 ### Code-defined workflows
 
