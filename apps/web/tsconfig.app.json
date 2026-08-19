@@ -12,6 +12,7 @@
       "@api/*": ["src/api/*"],
       "@components/*": ["src/components/*"],
       "@features/*": ["src/features/*"],
+      "@model/*": ["src/model/*"],
       "@providers/*": ["src/providers/*"],
       "@routes/*": ["src/routes/*"],
       "@theme/*": ["src/theme/*"]
