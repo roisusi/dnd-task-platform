@@ -1,9 +1,7 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 /** Creates the demo-users table required for task assignment. */
-export class MigrationsUserTable1787074572148
-  implements MigrationInterface
-{
+export class MigrationsUserTable1787074572148 implements MigrationInterface {
   /** Creates the users table when the migration is applied. */
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(

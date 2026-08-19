@@ -39,6 +39,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
 }
 
 /** Returns the demo-user selection shared by every task page. */
+// oxlint-disable-next-line react/only-export-components -- The hook intentionally consumes this provider's private context.
 export const useCurrentUser = (): CurrentUserContextValue => {
   const context = useContext(CurrentUserContext)
 

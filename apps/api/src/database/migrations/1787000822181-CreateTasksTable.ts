@@ -32,8 +32,6 @@ export class CreateTasksTable1787000822181 implements MigrationInterface {
   /** Removes the task table and its PostgreSQL lifecycle enum. */
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DROP TABLE "tasks"');
-    await queryRunner.query(
-      'DROP TYPE "public"."tasks_lifecycle_state_enum"',
-    );
+    await queryRunner.query('DROP TYPE "public"."tasks_lifecycle_state_enum"');
   }
 }

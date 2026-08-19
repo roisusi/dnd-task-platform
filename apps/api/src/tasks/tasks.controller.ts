@@ -26,9 +26,7 @@ export class TasksController {
 
   /** Returns the tasks assigned to one existing demo user. */
   @Get('assigned/:userId')
-  findAssignedToUser(
-    @Param('userId') userId: string,
-  ): Promise<TaskEntity[]> {
+  findAssignedToUser(@Param('userId') userId: string): Promise<TaskEntity[]> {
     return this.tasksService.findAssignedToUser(userId);
   }
 

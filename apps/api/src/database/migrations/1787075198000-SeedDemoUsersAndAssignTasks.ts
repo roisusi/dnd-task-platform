@@ -1,9 +1,7 @@
 import { MigrationInterface, QueryRunner, TableForeignKey } from 'typeorm';
 
 /** Seeds demo users and protects task assignments with a foreign key. */
-export class SeedDemoUsersAndAssignTasks1787075198000
-  implements MigrationInterface
-{
+export class SeedDemoUsersAndAssignTasks1787075198000 implements MigrationInterface {
   /** Inserts demo users before connecting existing and future tasks to them. */
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
