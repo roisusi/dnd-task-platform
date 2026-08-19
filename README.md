@@ -147,16 +147,25 @@ Migration details and maintenance commands are documented in
 
 ### 5. Start the applications
 
-Start the API in one terminal:
+Start the API and Web together from one terminal:
 
 ```bash
-npm run start:dev -w apps/api
+npm run dev
 ```
 
-Start the web application in another terminal:
+`concurrently` starts both processes and prefixes their output with `API` or
+`WEB`. Press `Ctrl+C` once to stop both.
+
+To run them separately, start the API in one terminal:
 
 ```bash
-npm run dev -w apps/web
+npm run dev:api
+```
+
+Then start the Web application in another terminal:
+
+```bash
+npm run dev:web
 ```
 
 Open:
